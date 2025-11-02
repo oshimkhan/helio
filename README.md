@@ -1,102 +1,292 @@
-![MIT License](https://img.shields.io/badge/license-MIT-green)
-![Build](https://img.shields.io/badge/build-passing-brightgreen)
-![Status](https://img.shields.io/badge/status-active-blue)
+<div align="center">
 
-# AeroStream — Intelligent Disease Detection via Breath Analysis
+# 💚 Healio - Health Monitoring System
 
-AeroStream is a cloud-native platform for real-time breath analysis and disease detection, built with Next.js, Azure, Supabase, and LLMs. Designed for rural scalability, it supports secure patient-doctor workflows with OTP-based access.
+**Modern, AI-powered health monitoring platform connecting patients with healthcare providers**
 
----
+[![License](https://img.shields.io/badge/license-Proprietary-red)](LICENSE)
+[![Status](https://img.shields.io/badge/status-active-success)](https://github.com/rahulyyadav/healthAnalysis)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 
-## 1. How It Works
+[Features](#-features) • [Getting Started](#-getting-started) • [Architecture](#-architecture) • [Tech Stack](#-tech-stack) • [Contributing](#-contributing)
 
-1. User logs in via phone number (Supabase + Twilio OTP)
-2. Breath input is collected and processed client-side
-3. Processed signal sent to Azure Function → triggers LLM-based prompt analysis
-4. Disease risk is inferred and shown on the User Dashboard
-5. Notification sent to doctor dashboard if threshold is crossed
+</div>
 
 ---
 
-## 2. Features
+## 📋 Overview
 
-- **Breath-Based Disease Prediction** using signal data and AI prompt engineering
-- **Secure Auth with Supabase** and **SMS OTP with Twilio**
-- **Mobile-First Frontend** built with Next.js and Shadcn for rapid access
-- **Azure Cloud-Hosted Backend** for inference and data sync
-- **Doctor Dashboard** for tracking patient diagnostics
-- **Admin Panel** for managing trends, usage, and rural deployment
+Healio is a comprehensive health monitoring system designed to bridge the gap between patients and healthcare providers. Built with modern web technologies, it offers real-time health tracking, AI-powered insights, and seamless communication between patients and doctors.
 
----
+### 🎯 Mission
 
-## 3. Motivation
-
-> AeroStream is designed to bring **preventive health diagnostics** to underserved regions through low-cost, LLM-powered tools that operate on breath-based bio-signals. Breath contains detectable biomarkers for diseases such as **COVID-19, diabetes, lung disease, and even cancer**.
+To make healthcare more accessible, efficient, and personalized through cutting-edge technology and intuitive user experience.
 
 ---
 
-## 4. Status
+## ✨ Features
 
-| Feature               | Description                                           | Status      |
-| --------------------- | ----------------------------------------------------- | ----------- |
-| Londing Page          | landing page, packages, getting started               | Done        |
-| Supabase setup        | Authentication, New user data                         | Done        |
-| Login Page            | User authentication UI                                | Done        |
-| Singup Page           | User registration                                     | Done        |
-| OTP Verification      | User verification on phone number                     | Done        |
-| Azure                 | Blob, Azure functions                                 | Done        |
-| User Dashboard        | Displays user data                                    | In Progress |
-| Doctor Dashboard      | User authentication UI                                | In Progress |
-| Disease Notifications | Alert User of detected Disease, send report to doctor | Not Started |
+### For Patients
+
+- 📊 **Real-time Health Monitoring** - Track vital signs and health metrics 24/7
+- 📈 **AI-Powered Insights** - Receive personalized health recommendations
+- 🔔 **Smart Notifications** - Get timely alerts for medications and appointments
+- 📝 **Complete Medical History** - Access your health records anytime
+- 💬 **Direct Doctor Communication** - Secure messaging with healthcare providers
+- 🔒 **Secure Data Storage** - End-to-end encrypted health records
+
+### For Healthcare Providers
+
+- 👥 **Patient Management** - Comprehensive patient profiles and history
+- 📋 **Health Reports** - Detailed analytics and insights
+- 🔔 **Priority Notifications** - Get alerted for critical patient conditions
+- 📊 **Dashboard Analytics** - Track patient trends and outcomes
+
+### For Administrators
+
+- 📈 **System Analytics** - Monitor platform usage and trends
+- 👥 **User Management** - Manage patients, doctors, and system settings
+- 📊 **Reporting Tools** - Generate comprehensive reports
 
 ---
 
-# 5. Architecture
+## 🚀 Getting Started
 
-![Architecture](public/AeroStream_Arch.png)
+### Prerequisites
 
-# 6. Landing Page
+- Node.js 18+ and npm
+- Supabase account (for authentication and database)
+- Twilio account (for SMS OTP verification)
 
-![Landing Page](public/AeroStream.jpeg)
+### Installation
 
-```md
-![Twilio OTP](public/Twilio_OTP.jpeg)
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/rahulyyadav/healthAnalysis.git
+   cd healthAnalysis/Webapp
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup**
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Add your environment variables:
+
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   TWILIO_ACCOUNT_SID=your_twilio_sid
+   TWILIO_AUTH_TOKEN=your_twilio_token
+   TWILIO_PHONE_NUMBER=your_twilio_phone
+   ```
+
+4. **Run the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Client (Next.js)                       │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │   Patient    │  │   Doctor     │  │    Admin     │      │
+│  │   Dashboard  │  │  Dashboard   │  │   Dashboard  │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Supabase (Backend)                       │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │  Auth + OTP  │  │   Database   │  │   Storage    │      │
+│  │  (Twilio)    │  │  (PostgreSQL)│  │   (Blob)     │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Azure Functions (ML)                        │
+│  ┌──────────────┐  ┌──────────────┐                        │
+│  │  AI Analysis │  │  Predictions  │                        │
+│  │  & Insights  │  │   Engine     │                        │
+│  └──────────────┘  └──────────────┘                        │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## 7. Tech Stack
+---
 
-| Layer      | Tools                                      |
-| ---------- | ------------------------------------------ |
-| Frontend   | Next.js, Shadcn, Tailwind, TypeScript      |
-| Backend    | Azure Functions, Blob, Supabase (Auth, DB) |
-| Auth & OTP | Supabase + Twilio SMS                      |
-| Auth & OTP | Supabase + Twilio SMS                      |
+## 🛠️ Tech Stack
+
+### Frontend
+
+- **Framework**: [Next.js 15](https://nextjs.org/) with App Router
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **UI Components**: [Lucide React](https://lucide.dev/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **State Management**: React Hooks
+
+### Backend & Services
+
+- **Database**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Authentication**: Supabase Auth + Twilio SMS OTP
+- **Cloud Functions**: Azure Functions
+- **Storage**: Azure Blob Storage
+- **Deployment**: [Vercel](https://vercel.com/)
+
+### Machine Learning
+
+- **ML Framework**: Python, scikit-learn
+- **API**: FastAPI
+- **Model**: Custom disease prediction model
 
 ---
 
-## 8. Getting Started
+## 📁 Project Structure
 
-```md
-git clone https://github.com/rahulyyadav/AeroStream.git
-cd aerostream
+```
+healthAnalysis/
+├── Webapp/                 # Next.js frontend application
+│   ├── src/
+│   │   ├── app/           # Next.js app router pages
+│   │   │   ├── page.tsx   # Landing page
+│   │   │   ├── login/     # Authentication pages
+│   │   │   ├── signup/    # Registration pages
+│   │   │   ├── dashboard/ # User dashboards
+│   │   │   └── api/       # API routes
+│   │   ├── components/    # Reusable components
+│   │   ├── lib/           # Utility functions
+│   │   └── utils/         # Helper utilities
+│   ├── public/            # Static assets
+│   └── package.json
+├── ML/                     # Machine learning models
+│   ├── api.py             # FastAPI endpoint
+│   └── disease_model.joblib
+└── README.md
 ```
 
-### Install frontend
+---
 
-```md
-cd frontend && npm install
-```
+## 🎨 Features Status
 
-### Environment setup
+| Feature             | Status         | Description                               |
+| ------------------- | -------------- | ----------------------------------------- |
+| Landing Page        | ✅ Complete    | Modern, responsive design with animations |
+| User Authentication | ✅ Complete    | Login, Signup with OTP verification       |
+| Patient Dashboard   | 🔄 In Progress | Health metrics and insights               |
+| Doctor Dashboard    | 🔄 In Progress | Patient management and monitoring         |
+| Admin Panel         | 🔄 In Progress | System analytics and management           |
+| Health Monitoring   | ✅ Complete    | Real-time vital signs tracking            |
+| AI Predictions      | 🔄 In Progress | Disease risk assessment                   |
+| Notifications       | 📋 Planned     | Alerts and reminders system               |
 
-```md
-cp .env.example .env.local
-```
+---
 
-> Add Supabase + Twilio keys here
+## 🔐 Security
 
-### Start frontend
+- **Encryption**: All sensitive data is encrypted at rest and in transit
+- **Authentication**: Secure OTP-based authentication via Twilio
+- **Authorization**: Role-based access control (Patient, Doctor, Admin)
+- **Data Privacy**: HIPAA-compliant data handling practices
 
-```md
-npm run dev
-```
+---
+
+## 🤝 Contributing
+
+We welcome contributions! However, please note that this is a proprietary project.
+
+**How to Contribute:**
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add some amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+**Guidelines:**
+
+- Follow the existing code style
+- Write clear commit messages
+- Add comments for complex logic
+- Test your changes thoroughly
+- Update documentation as needed
+
+**By contributing, you agree that your contributions will be licensed under the same proprietary license.**
+
+---
+
+## 📝 License
+
+This project is proprietary software. See [LICENSE](LICENSE) file for details.
+
+**Key Points:**
+
+- ❌ Personal or commercial use without permission is prohibited
+- ✅ Contributions through pull requests are welcome
+- 📧 Contact maintainers for licensing inquiries
+
+---
+
+## 👥 Contributors
+
+- **Rahul Yadav** - [@rahulyyadav](https://rahul-yadav.com.np/)
+- **Aashish Mahato** - Core Developer
+- **Oshim Pathan** - Core Developer
+
+---
+
+## 📞 Support & Contact
+
+- 📧 **Email**: Contact through GitHub Issues
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/rahulyyadav/healthAnalysis/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/rahulyyadav/healthAnalysis/discussions)
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Complete patient dashboard with full analytics
+- [ ] Doctor dashboard with patient management
+- [ ] Admin panel with system-wide analytics
+- [ ] Mobile app (React Native)
+- [ ] Advanced AI predictions with more disease models
+- [ ] Integration with wearable devices
+- [ ] Telehealth video consultations
+- [ ] Multi-language support
+
+---
+
+## 🙏 Acknowledgments
+
+- Next.js team for the amazing framework
+- Supabase for the backend infrastructure
+- The open-source community for inspiration and tools
+
+---
+
+<div align="center">
+
+**Made with ❤️ by the Healio Team**
+
+⭐ Star us on GitHub if you find this project interesting!
+
+</div>
