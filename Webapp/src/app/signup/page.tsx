@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { motion } from "framer-motion";
 import { countries } from "@/utils/countries";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { debounce } from "lodash";
 import { generatePatientId } from "@/lib/utils";
+import { User, Stethoscope, Shield, Mail, Lock, UserCircle, Phone, MapPin, Calendar, AlertCircle, GraduationCap, FileText, Briefcase, Eye, EyeOff, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 type UserType = "user" | "doctor" | "admin";
 
@@ -19,7 +20,6 @@ export default function UnifiedSignup() {
   );
 
   const [selectedUserType, setSelectedUserType] = useState<UserType>("user");
-  const [showUserTypeDropdown, setShowUserTypeDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
@@ -59,9 +59,9 @@ export default function UnifiedSignup() {
   const [contactCountryCode, setContactCountryCode] = useState("");
 
   const userTypeOptions = [
-    { value: "user", label: "Patient", icon: "👤", color: "blue" },
-    { value: "doctor", label: "Doctor", icon: "👨‍⚕️", color: "green" },
-    { value: "admin", label: "Admin", icon: "👨‍💼", color: "purple" },
+    { value: "user", label: "Patient", icon: "👤", color: "from-blue-500 to-cyan-500" },
+    { value: "doctor", label: "Doctor", icon: "👨‍⚕️", color: "from-green-500 to-emerald-500" },
+    { value: "admin", label: "Admin", icon: "👨‍💼", color: "from-purple-500 to-pink-500" },
   ];
 
   useEffect(() => {
@@ -256,130 +256,185 @@ export default function UnifiedSignup() {
     }
   };
 
-  const getCurrentUserTypeOption = () => {
-    return (
-      userTypeOptions.find((option) => option.value === selectedUserType) ||
-      userTypeOptions[0]
-    );
-  };
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute -top-40 -right-40 w-96 h-96 bg-white/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 50, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute -bottom-40 -left-40 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            x: [0, -50, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </div>
+
+      <div className="max-w-4xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-xl p-8"
+          transition={{ duration: 0.6 }}
+          className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 md:p-10"
         >
-          <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
-            Create Your Account
-          </h1>
-
-          {error && (
-            <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-6">
-              {error}
+          {/* Header */}
+          <motion.div
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl mb-4 shadow-lg">
+              <UserCircle className="w-8 h-8 text-white" />
             </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+              Create Your Account
+            </h1>
+            <p className="text-gray-600">Join Healio and start your health journey</p>
+          </motion.div>
+
+          {/* User Type Tabs */}
+          <motion.div
+            className="flex gap-2 mb-8 bg-gray-100 p-1 rounded-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            {userTypeOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setSelectedUserType(option.value as UserType)}
+                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${
+                  selectedUserType === option.value
+                    ? `bg-gradient-to-r ${option.color} text-white shadow-lg`
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <span className="text-xl mr-2">{option.icon}</span>
+                {option.label}
+              </button>
+            ))}
+          </motion.div>
+
+          {/* Error/Success Messages */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 text-sm flex items-start space-x-2"
+            >
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">{error}</div>
+            </motion.div>
           )}
 
           {signupSuccess && (
-            <div className="bg-green-50 text-green-700 p-4 rounded-lg mb-6 text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 text-sm text-center"
+            >
+              <CheckCircle2 className="w-5 h-5 inline mr-2" />
               Account created successfully! Redirecting to login...
-            </div>
+            </motion.div>
           )}
 
           {!signupSuccess && (
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* User Type Selection */}
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Account Type *
-                </label>
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowUserTypeDropdown(!showUserTypeDropdown)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 flex items-center justify-between"
-                  >
-                    <div className="flex items-center">
-                      <span className="text-xl mr-3">
-                        {getCurrentUserTypeOption().icon}
-                      </span>
-                      <span>{getCurrentUserTypeOption().label}</span>
-                    </div>
-                    <ChevronDownIcon className="w-5 h-5" />
-                  </button>
-
-                  {showUserTypeDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-                      {userTypeOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          onClick={() => {
-                            setSelectedUserType(option.value as UserType);
-                            setShowUserTypeDropdown(false);
-                          }}
-                          className="w-full px-4 py-2 text-left text-gray-900 hover:bg-gray-50 flex items-center"
-                        >
-                          <span className="text-xl mr-3">{option.icon}</span>
-                          <span>{option.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* Common Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     First Name *
                   </label>
-                  <input
-                    type="text"
-                    name="first_name"
-                    required
-                    value={formData.first_name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    placeholder="Enter your first name"
-                  />
-                </div>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="first_name"
+                      required
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+                      placeholder="Enter your first name"
+                    />
+                  </div>
+                </motion.div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Middle Name
                   </label>
-                  <input
-                    type="text"
-                    name="middle_name"
-                    value={formData.middle_name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    placeholder="Enter your middle name"
-                  />
-                </div>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="middle_name"
+                      value={formData.middle_name}
+                      onChange={handleChange}
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+                      placeholder="Enter your middle name"
+                    />
+                  </div>
+                </motion.div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Last Name *
                   </label>
-                  <input
-                    type="text"
-                    name="last_name"
-                    required
-                    value={formData.last_name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    placeholder="Enter your last name"
-                  />
-                </div>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="last_name"
+                      required
+                      value={formData.last_name}
+                      onChange={handleChange}
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+                      placeholder="Enter your last name"
+                    />
+                  </div>
+                </motion.div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.7 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Gender *
                   </label>
                   <select
@@ -387,7 +442,7 @@ export default function UnifiedSignup() {
                     required
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900"
                     aria-label="Select Gender"
                   >
                     <option value="">Select Gender</option>
@@ -395,10 +450,14 @@ export default function UnifiedSignup() {
                     <option value="female">Female</option>
                     <option value="other">Other</option>
                   </select>
-                </div>
+                </motion.div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Country *
                   </label>
                   <select
@@ -406,7 +465,7 @@ export default function UnifiedSignup() {
                     required
                     value={formData.country}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900"
                     aria-label="Select Country"
                   >
                     <option value="">Select Country</option>
@@ -416,52 +475,66 @@ export default function UnifiedSignup() {
                       </option>
                     ))}
                   </select>
-                </div>
+                </motion.div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.9 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Contact Number *
                   </label>
-                  <div className="flex">
+                  <div className="flex gap-2">
                     <select
                       value={contactCountryCode}
                       onChange={(e) => handleCountryCodeChange(e, "contact")}
-                      className="flex-shrink-0 mr-2 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 w-1/4"
+                      className="flex-shrink-0 px-3 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 w-1/3 text-sm"
                       aria-label="Select Contact Country Code"
                     >
                       {countries.map((country) => (
                         <option key={country.code} value={country.phone_code}>
-                          {country.name} ({country.phone_code})
+                          {country.phone_code}
                         </option>
                       ))}
                     </select>
-                    <input
-                      type="tel"
-                      name="contact"
-                      required
-                      value={formData.contact}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 w-3/4"
-                      placeholder="e.g., 1234567890"
-                    />
+                    <div className="relative flex-1">
+                      <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <input
+                        type="tel"
+                        name="contact"
+                        required
+                        value={formData.contact}
+                        onChange={handleChange}
+                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+                        placeholder="1234567890"
+                      />
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1 }}
+              >
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Address *
                 </label>
-                <textarea
-                  name="address"
-                  required
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                  rows={3}
-                  placeholder="Enter your address"
-                />
-              </div>
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
+                  <textarea
+                    name="address"
+                    required
+                    value={formData.address}
+                    onChange={handleChange}
+                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400 resize-none"
+                    rows={3}
+                    placeholder="Enter your address"
+                  />
+                </div>
+              </motion.div>
 
               {/* User-specific fields */}
               {selectedUserType === "user" && (
@@ -676,44 +749,109 @@ export default function UnifiedSignup() {
 
               {/* Email and Password */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 1.1 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Email *
                   </label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    placeholder="Enter your email"
-                  />
-                </div>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                </motion.div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 1.2 }}
+                >
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Password *
                   </label>
-                  <input
-                    type="password"
-                    name="password"
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                    placeholder="Enter your password"
-                  />
-                </div>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label="Toggle password visibility"
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                </motion.div>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors duration-300 disabled:opacity-50"
+              {/* Submit Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.3 }}
               >
-                {loading ? "Creating Account..." : "Create Account"}
-              </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full group relative overflow-hidden bg-gradient-to-r from-purple-600 to-pink-500 text-white py-4 px-6 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="relative z-10 flex items-center justify-center space-x-2">
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Creating Account...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Create Account</span>
+                        <CheckCircle2 className="w-5 h-5" />
+                      </>
+                    )}
+                  </span>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </button>
+              </motion.div>
+
+              {/* Sign In Link */}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 1.4 }}
+              >
+                <p className="text-sm text-gray-600">
+                  Already have an account?{" "}
+                  <Link
+                    href="/login"
+                    className="font-semibold text-purple-600 hover:text-pink-500 transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                </p>
+              </motion.div>
             </form>
           )}
         </motion.div>
