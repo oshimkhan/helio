@@ -55,49 +55,96 @@ To make healthcare more accessible, efficient, and personalized through cutting-
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- Supabase account (for authentication and database)
-- Twilio account (for SMS OTP verification)
+- **Node.js 18+** and npm (or yarn)
+- **Python 3.8+** (for ML API server)
+- **Supabase account** (for authentication and database)
+- **Gemini API key** (for AI predictions, optional)
+- **Twilio account** (for SMS OTP verification, optional)
 
-### Installation
+### Quick Setup (Recommended)
 
 1. **Clone the repository**
 
    ```bash
    git clone https://github.com/rahulyyadav/healthAnalysis.git
-   cd healthAnalysis/Webapp
+   cd healthAnalysis
    ```
 
-2. **Install dependencies**
+2. **Run the setup script**
 
+   **On macOS/Linux:**
    ```bash
-   npm install
+   chmod +x setup.sh  # Only needed first time, makes script executable
+   ./setup.sh
    ```
+
+   **On Windows:**
+   ```bash
+   setup.bat
+   ```
+
+   This will automatically:
+   - Create Python virtual environment
+   - Install Python dependencies (FastAPI, uvicorn, scikit-learn, etc.)
+   - Install Node.js dependencies
+   - Set up everything you need
 
 3. **Environment Setup**
 
    ```bash
-   cp .env.example .env.local
+   cd Webapp
+   cp .env.example .env.local  # If .env.example exists
    ```
 
-   Add your environment variables:
+   Create `Webapp/.env.local` with your environment variables:
 
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   TWILIO_ACCOUNT_SID=your_twilio_sid
-   TWILIO_AUTH_TOKEN=your_twilio_token
-   TWILIO_PHONE_NUMBER=your_twilio_phone
+   GEMINI_API_KEY=your_gemini_api_key
+   ML_API_URL=http://127.0.0.1:8000
    ```
 
-4. **Run the development server**
+4. **Start the development servers**
 
    ```bash
    npm run dev
    ```
 
-5. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+   This starts both:
+   - **Next.js frontend** on [http://localhost:3000](http://localhost:3000)
+   - **ML API server** on [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+### Manual Setup
+
+If you prefer to set up manually:
+
+1. **Set up Python environment**
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r ML/requirements.txt
+   ```
+
+2. **Set up Node.js**
+
+   ```bash
+   cd Webapp
+   npm install
+   ```
+
+3. **Run development servers**
+
+   ```bash
+   npm run dev  # Starts both frontend and ML API
+   ```
+
+   Or run separately:
+   ```bash
+   npm run dev:next  # Only Next.js
+   npm run dev:api   # Only ML API
+   ```
 
 ---
 
@@ -154,9 +201,10 @@ To make healthcare more accessible, efficient, and personalized through cutting-
 
 ### Machine Learning
 
-- **ML Framework**: Python, scikit-learn
-- **API**: FastAPI
-- **Model**: Custom disease prediction model
+- **ML Framework**: Python 3.8+, scikit-learn
+- **API**: FastAPI with uvicorn
+- **Model**: Custom disease prediction model (disease_model.joblib)
+- **Dependencies**: See `ML/requirements.txt`
 
 ---
 

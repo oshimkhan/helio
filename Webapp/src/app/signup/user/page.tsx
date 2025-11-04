@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { motion } from "framer-motion";
 import { countries } from "@/utils/countries";
-import { generatePatientId } from "@/lib/utils";
+import { generatePatientId, assignDoctorToPatient } from "@/lib/utils";
 
 export default function UserSignup() {
   const router = useRouter();
@@ -106,6 +106,11 @@ export default function UserSignup() {
         ]);
 
         if (insertError) throw insertError;
+
+        // Automatically assign a doctor to the new patient
+        if (patientId) {
+          await assignDoctorToPatient(supabase, patientId);
+        }
 
         setSignupSuccess(true);
         setTimeout(() => {

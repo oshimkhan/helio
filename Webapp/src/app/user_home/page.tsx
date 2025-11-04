@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
+import { assignDoctorToPatient } from "@/lib/utils";
 import {
   Heart,
   Droplets,
@@ -138,56 +139,24 @@ const HealthDashboard = () => {
   const getOrAssignDoctor = async (patientId: string) => {
     try {
       setAssignedDoctorLoading(true);
-      const { data: assignment, error: aErr } = await supabase
-        .from('doctor_patient_assignment')
-        .select('doctor_id')
-        .eq('patient_id', patientId)
-        .maybeSingle();
-      if (aErr) throw aErr;
-
-      let doctorId: number | null = assignment?.doctor_id ?? null;
-
+      
+      // Use the utility function to assign a doctor (or get existing assignment)
+      const doctorId = await assignDoctorToPatient(supabase, patientId);
+      
       if (!doctorId) {
-        const { data: doctors, error: dErr } = await supabase
-          .from('doctor')
-          .select('doctor_id, first_name, last_name');
-        if (dErr) throw dErr;
-
-        const { data: assignments, error: cErr } = await supabase
-          .from('doctor_patient_assignment')
-          .select('doctor_id, patient_id');
-        if (cErr) throw cErr;
-
-        const counts = new Map<number, number>();
-        assignments?.forEach((row: any) => {
-          counts.set(row.doctor_id, (counts.get(row.doctor_id) || 0) + 1);
-        });
-
-        let chosen: any | null = null;
-        let min = Number.POSITIVE_INFINITY;
-        (doctors || []).forEach((doc: any) => {
-          const cnt = counts.get(doc.doctor_id) || 0;
-          if (cnt < min) {
-            min = cnt;
-            chosen = doc;
-          }
-        });
-
-        if (!chosen) return; // no doctors available
-        doctorId = chosen.doctor_id as number;
-
-        const { error: insErr } = await supabase
-          .from('doctor_patient_assignment')
-          .insert({ doctor_id: doctorId, patient_id: patientId });
-        if (insErr) throw insErr;
+        setAssignedDoctorName(null);
+        return;
       }
 
+      // Fetch doctor details to display the name
       const { data: doctorRow, error: docErr } = await supabase
         .from('doctor')
         .select('first_name, last_name')
         .eq('doctor_id', doctorId)
         .single();
+      
       if (docErr) throw docErr;
+      
       const full = `${doctorRow?.first_name ?? ''} ${doctorRow?.last_name ?? ''}`.trim() || 'Assigned Doctor';
       setAssignedDoctorName(full);
     } catch (e) {

@@ -6,7 +6,7 @@ import { createBrowserClient } from "@supabase/ssr";
 import { motion } from "framer-motion";
 import { countries } from "@/utils/countries";
 import { debounce } from "lodash";
-import { generatePatientId } from "@/lib/utils";
+import { generatePatientId, assignDoctorToPatient } from "@/lib/utils";
 import { User, Stethoscope, Shield, Mail, Lock, UserCircle, Phone, MapPin, Calendar, AlertCircle, GraduationCap, FileText, Briefcase, Eye, EyeOff, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -206,6 +206,11 @@ export default function UnifiedSignup() {
             },
           ]);
           insertError = error;
+          
+          // Automatically assign a doctor to the new patient
+          if (!insertError && patientId) {
+            await assignDoctorToPatient(supabase, patientId);
+          }
         } else if (selectedUserType === "doctor") {
           // Insert into doctor table
           const { error } = await supabase.from("doctor").insert([

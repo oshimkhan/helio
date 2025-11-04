@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "concurrently \"next dev --turbopack\" \"node scripts/start-api.js\" --names \"NEXT,API\" --prefix-colors \"cyan,magenta\"",
+    "dev:next": "next dev --turbopack",
+    "dev:api": "node scripts/start-api.js",
     "build": "next build --no-lint",
     "start": "next start",
     "lint": "next lint"
@@ -31,6 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "tailwindcss": "^4",

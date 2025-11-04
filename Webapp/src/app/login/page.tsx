@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Heart, Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { assignDoctorToPatient } from "@/lib/utils";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -70,11 +71,16 @@ export default function LoginPage() {
         // Check if user is a patient
         const { data: userData } = await supabase
           .from("users")
-          .select("id")
+          .select("id, patient_id")
           .eq("id", userId)
           .single();
 
         if (userData) {
+          // Automatically assign a doctor if patient doesn't have one
+          if (userData.patient_id) {
+            await assignDoctorToPatient(supabase, userData.patient_id);
+          }
+          
           setLoginSuccess(true);
           setTimeout(() => {
             router.push("/user_home");

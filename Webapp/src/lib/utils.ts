@@ -130,3 +130,160 @@ function incrementPatientId(currentId: string, prefix: string): string {
   // Fallback case (should never happen with proper data)
   return `${prefix}00001`;
 }
+
+/**
+ * Automatically assigns a doctor to a patient if they don't have one.
+ * Assigns the doctor with the lowest number of patients.
+ * 
+ * @param supabase - Supabase client instance
+ * @param patientId - The patient ID to assign a doctor to
+ * @returns The assigned doctor_id or null if no doctors available or assignment failed
+ */
+export async function assignDoctorToPatient(supabase: any, patientId: string): Promise<number | null> {
+  try {
+    // Check if patient already has a doctor assigned
+    const { data: assignment, error: aErr } = await supabase
+      .from('doctor_patient_assignment')
+      .select('doctor_id')
+      .eq('patient_id', patientId)
+      .maybeSingle();
+    
+    if (aErr) {
+      console.error('Error checking existing assignment:', aErr);
+      return null;
+    }
+
+    // If already assigned, return the existing doctor_id
+    if (assignment?.doctor_id) {
+      return assignment.doctor_id;
+    }
+
+    // Get all doctors
+    const { data: allDoctors, error: dErr } = await supabase
+      .from('doctor')
+      .select('doctor_id, first_name, last_name');
+    
+    if (dErr) {
+      console.error('Error fetching doctors:', dErr);
+      return null;
+    }
+
+    // Filter out doctors with null doctor_id
+    const doctors = (allDoctors || []).filter((doc: any) => doc.doctor_id !== null && doc.doctor_id !== undefined);
+
+    if (!doctors || doctors.length === 0) {
+      console.warn('No doctors available for assignment (all doctors may have null doctor_id)');
+      return null;
+    }
+
+    // Get all existing assignments to count patients per doctor
+    const { data: assignments, error: cErr } = await supabase
+      .from('doctor_patient_assignment')
+      .select('doctor_id, patient_id');
+    
+    if (cErr) {
+      console.error('Error fetching assignments:', cErr);
+      return null;
+    }
+
+    // Count patients per doctor
+    const counts = new Map<number, number>();
+    assignments?.forEach((row: any) => {
+      counts.set(row.doctor_id, (counts.get(row.doctor_id) || 0) + 1);
+    });
+
+    // Find doctor with lowest number of patients
+    let chosen: any | null = null;
+    let min = Number.POSITIVE_INFINITY;
+    doctors.forEach((doc: any) => {
+      const cnt = counts.get(doc.doctor_id) || 0;
+      if (cnt < min) {
+        min = cnt;
+        chosen = doc;
+      }
+    });
+
+    if (!chosen) {
+      console.warn('Could not select a doctor for assignment');
+      return null;
+    }
+
+    const doctorId = chosen.doctor_id as number;
+
+    // Validate doctor_id is not null
+    if (!doctorId || doctorId === null) {
+      console.error('Selected doctor has null doctor_id:', chosen);
+      return null;
+    }
+
+    // Validate patient_id exists
+    const { data: patientCheck, error: patientCheckErr } = await supabase
+      .from('users')
+      .select('patient_id')
+      .eq('patient_id', patientId)
+      .maybeSingle();
+    
+    if (patientCheckErr || !patientCheck) {
+      console.error('Patient ID does not exist in users table:', patientId, patientCheckErr);
+      return null;
+    }
+
+    // Double-check assignment doesn't already exist (race condition protection)
+    const { data: existingCheck } = await supabase
+      .from('doctor_patient_assignment')
+      .select('doctor_id')
+      .eq('patient_id', patientId)
+      .maybeSingle();
+    
+    if (existingCheck?.doctor_id) {
+      console.log(`Patient ${patientId} already has doctor ${existingCheck.doctor_id} assigned`);
+      return existingCheck.doctor_id;
+    }
+
+    // Insert the assignment
+    const { data: insertData, error: insErr } = await supabase
+      .from('doctor_patient_assignment')
+      .insert({ doctor_id: doctorId, patient_id: patientId })
+      .select();
+    
+    if (insErr) {
+      // Log detailed error information
+      try {
+        console.error('Error inserting doctor assignment:', JSON.stringify(insErr, null, 2));
+        console.error('Error details:', {
+          code: insErr.code,
+          message: insErr.message,
+          details: insErr.details,
+          hint: insErr.hint,
+          doctorId,
+          patientId
+        });
+      } catch (e) {
+        console.error('Error inserting doctor assignment (raw):', insErr);
+        console.error('doctorId:', doctorId, 'patientId:', patientId);
+      }
+      
+      // If it's a unique constraint violation, try to get the existing assignment
+      if (insErr.code === '23505' || insErr.message?.includes('unique')) {
+        console.log('Unique constraint violation detected, fetching existing assignment');
+        const { data: existing } = await supabase
+          .from('doctor_patient_assignment')
+          .select('doctor_id')
+          .eq('patient_id', patientId)
+          .maybeSingle();
+        
+        if (existing?.doctor_id) {
+          return existing.doctor_id;
+        }
+      }
+      
+      return null;
+    }
+
+    console.log(`Successfully assigned doctor ${doctorId} to patient ${patientId}`);
+    return doctorId;
+  } catch (e) {
+    console.error('Error in assignDoctorToPatient:', e);
+    return null;
+  }
+}
