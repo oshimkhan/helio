@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/check-setup.js || exit 0",
     "dev": "concurrently \"next dev --turbopack\" \"node scripts/start-api.js\" --names \"NEXT,API\" --prefix-colors \"cyan,magenta\"",
     "dev:next": "next dev --turbopack",
     "dev:api": "node scripts/start-api.js",

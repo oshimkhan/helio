@@ -61,20 +61,20 @@ To make healthcare more accessible, efficient, and personalized through cutting-
 - **Gemini API key** (for AI predictions, optional)
 - **Twilio account** (for SMS OTP verification, optional)
 
-### Quick Setup (Recommended)
+### Quick Setup (3 Steps)
 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/rahulyyadav/healthAnalysis.git
-   cd healthAnalysis
+   git clone https://github.com/oshimkhan/helio.git
+   cd helio
    ```
 
-2. **Run the setup script**
+2. **Run the setup script** (sets up Python + Node.js)
 
    **On macOS/Linux:**
    ```bash
-   chmod +x setup.sh  # Only needed first time, makes script executable
+   chmod +x setup.sh  # Only needed first time
    ./setup.sh
    ```
 
@@ -83,37 +83,33 @@ To make healthcare more accessible, efficient, and personalized through cutting-
    setup.bat
    ```
 
-   This will automatically:
-   - Create Python virtual environment
-   - Install Python dependencies (FastAPI, uvicorn, scikit-learn, etc.)
-   - Install Node.js dependencies
-   - Set up everything you need
+   ⚠️ **Important:** You MUST run this from the project root (not inside Webapp folder)
+   
+   This automatically:
+   - ✅ Creates Python virtual environment
+   - ✅ Installs Python dependencies (FastAPI, uvicorn, scikit-learn, etc.)
+   - ✅ Installs Node.js dependencies
+   - ✅ Sets up everything needed
 
-3. **Environment Setup**
+3. **Configure and start**
 
    ```bash
    cd Webapp
-   cp .env.example .env.local  # If .env.example exists
+   # Create .env.local with your credentials (see below)
+   npm run dev
    ```
 
-   Create `Webapp/.env.local` with your environment variables:
+   This starts both servers:
+   - **Next.js frontend** on [http://localhost:3000](http://localhost:3000)
+   - **ML API server** on [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
+**Environment Variables** (create `Webapp/.env.local`):
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    GEMINI_API_KEY=your_gemini_api_key
    ML_API_URL=http://127.0.0.1:8000
    ```
-
-4. **Start the development servers**
-
-   ```bash
-   npm run dev
-   ```
-
-   This starts both:
-   - **Next.js frontend** on [http://localhost:3000](http://localhost:3000)
-   - **ML API server** on [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ### Manual Setup
 
