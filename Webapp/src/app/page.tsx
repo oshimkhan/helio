@@ -686,7 +686,7 @@ export default function Home() {
             {/* Social Links */}
             <div className="flex space-x-3">
               {[
-                { name: "LinkedIn", href: "#", icon: "M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5 1.11-2.5 2.48-2.5 2.48 1.119 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0H7.943v16h3.982v-6.57c0-3.668 4.775-4 4.775 0v6.57h3.982v-8.359c0-6.281-3.095-8.34-7.819-8.34-3.42 0-5.336 1.914-6.225 3.548h-.02v-3.089h-4.017c.059 1.218 0 16 0 16h4.017v-5.65c0-1.038.035-2.068.189-2.848.417-2.091 2.037-3.583 4.389-3.583 3.415 0 4.935 2.37 4.935 5.77v7.411h3.983z" }
+                { name: "LinkedIn", href: "https://www.linkedin.com/in/oshim7786/", icon: "M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5 1.11-2.5 2.48-2.5 2.48 1.119 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0H7.943v16h3.982v-6.57c0-3.668 4.775-4 4.775 0v6.57h3.982v-8.359c0-6.281-3.095-8.34-7.819-8.34-3.42 0-5.336 1.914-6.225 3.548h-.02v-3.089h-4.017c.059 1.218 0 16 0 16h4.017v-5.65c0-1.038.035-2.068.189-2.848.417-2.091 2.037-3.583 4.389-3.583 3.415 0 4.935 2.37 4.935 5.77v7.411h3.983z" }
               ].map((social) => (
                 <motion.a
                   key={social.name}
@@ -713,13 +713,11 @@ export default function Home() {
           <div className="pt-6 border-t border-gray-700/50 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
             <p className="text-gray-500">© 2024 Healio. All rights reserved.</p>
             <div className="flex flex-wrap gap-4 text-gray-400">
-              <a href="https://rahul-yadav.com.np/" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
-                Rahul Yadav
+              <a href="https://portfolio-with-react-vite.vercel.app/" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
+                Oshim Pathan
               </a>
               <span className="text-gray-600">•</span>
-              <span>Aashish Mahato</span>
-              <span className="text-gray-600">•</span>
-              <span>Oshim Pathan</span>
+              <span>Bibek Gami</span>
             </div>
           </div>
         </div>
